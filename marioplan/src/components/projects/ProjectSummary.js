@@ -1,6 +1,6 @@
 import React from 'react';
 
-const projectSummary = ({title}) => (
+const ProjectSummary = ({ title }) => (
   <div className="card z-depth-0 project-summary">
     <span className="card-title">{title}</span>
     <p>Posted by Minh</p>
@@ -8,4 +8,6 @@ const projectSummary = ({title}) => (
   </div>
 );
 
-export default projectSummary
+export default ProjectSummary
+
+

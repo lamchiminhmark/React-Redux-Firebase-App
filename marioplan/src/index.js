@@ -11,23 +11,28 @@ import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
 import { reduxFirestore, getFirestore } from 'redux-firestore';
 import fbConfig from './config/fbConfig';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   rootReducer,
-  compose(
+  composeEnhancers(
     applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
-    reactReduxFirebase(fbConfig),
-    reduxFirestore(fbConfig),
+    reactReduxFirebase(fbConfig, { attachAuthIsReady: true }),
+    reduxFirestore(fbConfig)
   )
 );
 
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
+const renderDom = async () => {
+  await store.firebaseAuthIsReady
+  ReactDOM.render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+    document.getElementById('root')
+  );
+  serviceWorker.unregister();
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+renderDom()
+
+// Why does the other stuff render before the signed in links?
+// Because when firebase is first loaded, firebase.auth is there, just not ...uid
